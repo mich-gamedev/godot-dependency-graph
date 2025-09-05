@@ -28,7 +28,7 @@ config/features=PackedStringArray("4.4")
 
 [editor_plugins]
 
-enabled=PackedStringArray("res://addons/dependency_graph/plugin.cfg", "res://addons/resources_spreadsheet_view/plugin.cfg")
+enabled=PackedStringArray("res://addons/dependency_graph/plugin.cfg")
 
 [rendering]
 
