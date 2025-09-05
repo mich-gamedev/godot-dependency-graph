@@ -10,7 +10,9 @@ grow_horizontal = 2
 grow_vertical = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
-scroll_offset = Vector2(-48, -48)
 grid_pattern = 1
+snapping_enabled = false
 show_zoom_label = true
 script = ExtResource("1_5nt5g")
+
+[connection signal="child_entered_tree" from="." to="." method="_on_child_entered_tree"]
