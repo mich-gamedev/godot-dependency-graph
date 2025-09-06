@@ -26,7 +26,7 @@ func _line_submitted(text: String) -> void:
 	(await _add_file(text))
 
 
-func _add_file(file: String) -> GraphNode:
+func _add_file(file: String, _base_offset := Vector2()) -> GraphNode:
 	var inst = GRAPH_NODE.instantiate()
 	add_child(inst)
 	var res := load(file)
@@ -38,6 +38,7 @@ func _add_file(file: String) -> GraphNode:
 		nodes[file] = inst
 
 		await inst.resized
+		inst.position_offset = _base_offset
 
 		var dependencies := ResourceLoader.get_dependencies(file)
 		var _last_n: GraphNode
@@ -48,10 +49,13 @@ func _add_file(file: String) -> GraphNode:
 			dep_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
 			inst.add_child(dep_label)
 			inst.set_slot_enabled_right(i + 1, true)
-			var node = nodes[path] if nodes.has(path) else await _add_file(path)
-			connect_node(inst.name, i, node.name, 0)
+			if _last_n:
+				_last_n.reset_size()
 			await get_tree().process_frame
-			node.set(&"position_offset", inst.position_offset + Vector2(inst.size.x + snapping_distance * 8, (_last_n.position_offset.y + _last_n.size.y + snapping_distance * 3 if _last_n else -dependencies.size() * 78. / 2.)))
+			var node = nodes[path] if nodes.has(path) else await _add_file(path, _base_offset + Vector2(inst.size.x + snapping_distance * 8, _last_n.position_offset.y + _last_n.get_combined_minimum_size().y + snapping_distance if _last_n else 0))
+			print(_last_n.get_combined_minimum_size().y if _last_n else 0)
+			connect_node(inst.name, i, node.name, 0)
+			#node.position_offset = _base_offset + Vector2(inst.size.x + snapping_distance * 8, (_last_n.position_offset.y + _last_n.size.y + snapping_distance if _last_n else -dependencies.size() * 78. / 2.))
 			_last_n = node
 	else:
 		inst.title = "Invalid! (%s)" % file.get_file()
